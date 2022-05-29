@@ -28,3 +28,5 @@ if __name__ == '__main__' :
         print("draw")
     else:
         print(f"winner is {board.checkWin()}")
+
+
