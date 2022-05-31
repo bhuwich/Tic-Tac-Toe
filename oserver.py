@@ -1,7 +1,6 @@
 from ast import arg
 from multiprocessing.sharedctypes import Value
 import socket
-from this import s
 import threading
 from cProfile import label
 from email.mime import image
@@ -128,20 +127,18 @@ def play():
     button25.grid(row=4,column=4)
     
 def press(r,c): 
-    global turnPlay,TCP_IP,TCP_PORT,BUFFER_SIZE,s
+    global turnPlay,TCP_IP,TCP_PORT,BUFFER_SIZE
     if turnPlay:
         labelPhoto = Label(root,image = o)
         labelPhoto.grid(row=r,column=c)
-        message = str(r)+","+str(c)
-        s.send(message.encode('utf-8'))
-        board.put(r,c,"o")
+        board.put(r,c,"x")
         turnPlay = False
     if turnPlay == False:  
         data = conn.recv(BUFFER_SIZE)
         data = data.decode("utf-8")
         labelPhoto = Label(root,image = x)
         labelPhoto.grid(row=int(data[:1]),column=int(data[-1:]))
-        board.put(int(data[:1]),int(data[-1:]),"x")
+        board.put(int(data[:1]),int(data[-1:]))
         turnPlay = True
 
     if(board.checkWin()!= 'none'):
