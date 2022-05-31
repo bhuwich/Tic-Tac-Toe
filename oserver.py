@@ -1,3 +1,4 @@
+import socket
 from cProfile import label
 from email.mime import image
 from itertools import count
@@ -13,6 +14,10 @@ root.iconbitmap("tic_tac_toe.ico")
 root.title("Tic Tac Toe Game")
 root.resizable(False,False)
 board = Board(5,5,4)
+TCP_IP = "127.0.0.1"
+TCP_PORT = 8081
+BUFFER_SIZE = 1024
+play = True
 ai = AI(2, board)
 btn1 = StringVar() 
 btn2 = StringVar() 
@@ -118,26 +123,26 @@ def play():
     button25 = Button(root,height=9,width=19,relief='ridge',borderwidth=.5,background='#bf80ff',textvariable=btn25,command=lambda:press(4,4))
     button25.grid(row=4,column=4)
     
-    
-        
-    
-
-play()
-
-
-
 def press(r,c): 
-    labelPhoto = Label(root,image = x)
-    labelPhoto.grid(row=r,column=c)
-    board.put(r,c,"x")
-    coor = ai.analysis() 
-    labelPhoto = Label(root,image = o)
-    labelPhoto.grid(row=coor[0],column=coor[1])
-    board.put(coor[0],coor[1],"o")
+    global play,TCP_IP,TCP_PORT,BUFFER_SIZE
+    if play:
+        labelPhoto = Label(root,image = x)
+        labelPhoto.grid(row=r,column=c)
+        message = str(r)+","+str(c)
+        s.send(message.encode('utf-8'))
+        board.put(r,c,"x")
+
     if(board.checkWin()!= 'none'):
         if board.checkWin() == 'draw':
             msgbox("Draw T-T")                          
         else:
-            msgbox("Winner is "+board.checkWin()+"!!!!!!!!","Winner","close")
-    
+            msgbox("Winner is "+board.checkWin()+"!!!!!!!!","Winner","close") 
+
+TCP_IP = "127.0.0.1"
+TCP_PORT = 8081
+BUFFER_SIZE = 1024
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((TCP_IP,TCP_PORT)) 
+play()
+
 root.mainloop()

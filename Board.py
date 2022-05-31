@@ -1,4 +1,5 @@
 import numpy as np
+import socket
 class Board:
     def __init__(self,m, n, a):
         self.board = np.zeros([m,n], dtype=int)
@@ -91,4 +92,6 @@ class Board:
                 if self.board[i,j] == 0:
                     return False
         return True
+    
+    
 
