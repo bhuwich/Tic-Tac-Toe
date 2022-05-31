@@ -1,4 +1,8 @@
+from ast import arg
+from multiprocessing.sharedctypes import Value
 import socket
+from this import s
+import threading
 from cProfile import label
 from email.mime import image
 from itertools import count
@@ -17,7 +21,7 @@ board = Board(5,5,4)
 TCP_IP = "127.0.0.1"
 TCP_PORT = 8081
 BUFFER_SIZE = 1024
-play = True
+turnPlay = True
 ai = AI(2, board)
 btn1 = StringVar() 
 btn2 = StringVar() 
@@ -124,13 +128,21 @@ def play():
     button25.grid(row=4,column=4)
     
 def press(r,c): 
-    global play,TCP_IP,TCP_PORT,BUFFER_SIZE
-    if play:
-        labelPhoto = Label(root,image = x)
+    global turnPlay,TCP_IP,TCP_PORT,BUFFER_SIZE,s
+    if turnPlay:
+        labelPhoto = Label(root,image = o)
         labelPhoto.grid(row=r,column=c)
         message = str(r)+","+str(c)
         s.send(message.encode('utf-8'))
-        board.put(r,c,"x")
+        board.put(r,c,"o")
+        turnPlay = False
+    if turnPlay == False:  
+        data = conn.recv(BUFFER_SIZE)
+        data = data.decode("utf-8")
+        labelPhoto = Label(root,image = x)
+        labelPhoto.grid(row=int(data[:1]),column=int(data[-1:]))
+        board.put(int(data[:1]),int(data[-1:]),"x")
+        turnPlay = True
 
     if(board.checkWin()!= 'none'):
         if board.checkWin() == 'draw':
@@ -138,11 +150,16 @@ def press(r,c):
         else:
             msgbox("Winner is "+board.checkWin()+"!!!!!!!!","Winner","close") 
 
-TCP_IP = "127.0.0.1"
-TCP_PORT = 8081
-BUFFER_SIZE = 1024
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((TCP_IP,TCP_PORT)) 
-play()
+def server():
+    global TCP_IP,TCP_PORT,BUFFER_SIZE,conn
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((TCP_IP,TCP_PORT)) 
+    s.listen(1)
+    conn, addr = s.accept()
+    print('Connection address:', addr)
+    
+
+threading.Thread(target = server).start()
+threading.Thread(target = play).start()
 
 root.mainloop()

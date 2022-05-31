@@ -1,3 +1,4 @@
+from pydoc import cli
 import socket
 from cProfile import label
 from email.mime import image
@@ -9,6 +10,7 @@ import easygui
 from tkinter import *
 from easygui import *
 import tkinter.messagebox
+import threading
 root = tk.Tk()
 root.iconbitmap("tic_tac_toe.ico")
 root.title("Tic Tac Toe Game")
@@ -121,25 +123,38 @@ def play():
     button25.grid(row=4,column=4)
     
 def press(r,c): 
-    global play,TCP_IP,TCP_PORT,BUFFER_SIZE
-    if play:
+    global play,TCP_IP,TCP_PORT,BUFFER_SIZE,s
+    if play == False:
         labelPhoto = Label(root,image = x)
         labelPhoto.grid(row=r,column=c)
         message = str(r)+","+str(c)
-        s.send(message.encode('utf-8'))
+        socket.sendall(message.encode('utf-8'))
         board.put(r,c,"x")
+        play = True
+    if play :
+        data = s.recv(BUFFER_SIZE)
+        data = data.decode("utf-8")
+        labelPhoto = Label(root,image = o)
+        labelPhoto.grid(row=int(data[:1]),column=int(data[-1:]))
+        board.put(int(data[:1]),int(data[-1:]),"o")
+        play = False
 
     if(board.checkWin()!= 'none'):
         if board.checkWin() == 'draw':
             msgbox("Draw T-T")                          
         else:
             msgbox("Winner is "+board.checkWin()+"!!!!!!!!","Winner","close") 
+def client():
+    global TCP_IP,TCP_PORT,BUFFER_SIZE,conn
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((TCP_IP,TCP_PORT))
+    
+
 TCP_IP = "127.0.0.1"
 TCP_PORT = 8081
 BUFFER_SIZE = 1024
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((TCP_IP,TCP_PORT))   
-play()
+threading.Thread(target = client).start()
+threading.Thread(target = play).start()
 
 
 root.mainloop()
