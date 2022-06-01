@@ -12,6 +12,7 @@ import easygui
 from tkinter import *
 from easygui import *
 import tkinter.messagebox
+
 root = tk.Tk()
 root.iconbitmap("tic_tac_toe.ico")
 root.title("Tic Tac Toe Game")
@@ -127,18 +128,16 @@ def play():
     button25.grid(row=4,column=4)
     
 def press(r,c): 
-    global turnPlay,TCP_IP,TCP_PORT,BUFFER_SIZE
+    global turnPlay,o
     if turnPlay:
         labelPhoto = Label(root,image = o)
         labelPhoto.grid(row=r,column=c)
-        board.put(r,c,"x")
+        board.put(r,c,"o")
+        message = str(r)+","+str(c)  
+        conn.sendall(message.encode('utf-8'))
         turnPlay = False
     if turnPlay == False:  
-        data = conn.recv(BUFFER_SIZE)
-        data = data.decode("utf-8")
-        labelPhoto = Label(root,image = x)
-        labelPhoto.grid(row=int(data[:1]),column=int(data[-1:]))
-        board.put(int(data[:1]),int(data[-1:]))
+        rev()
         turnPlay = True
 
     if(board.checkWin()!= 'none'):
@@ -149,14 +148,26 @@ def press(r,c):
 
 def server():
     global TCP_IP,TCP_PORT,BUFFER_SIZE,conn
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((TCP_IP,TCP_PORT)) 
-    s.listen(1)
-    conn, addr = s.accept()
-    print('Connection address:', addr)
-    
+    while True: 
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind((TCP_IP,TCP_PORT)) 
+        s.listen(5)
+        conn, addr = s.accept()
+        
+        s.close()
 
-threading.Thread(target = server).start()
+        
+
+def rev():
+    global x
+    data = conn.recv(BUFFER_SIZE)  
+    data = data.decode("utf-8")
+    labelPhoto = Label(root,image = x)
+    labelPhoto.grid(row=int(data[:1]),column=int(data[-1:]))
+    board.put(int(data[:1]),int(data[-1:]),"x")
+    
 threading.Thread(target = play).start()
+threading.Thread(target = server).start()
+
 
 root.mainloop()
