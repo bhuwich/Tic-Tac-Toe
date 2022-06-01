@@ -1,7 +1,6 @@
 import socket
 from cProfile import label
 from email.mime import image
-from itertools import count
 from Board import Board
 import tkinter as tk
 from AI import AI
@@ -12,7 +11,7 @@ import tkinter.messagebox
 import threading
 root = tk.Tk()
 root.iconbitmap("tic_tac_toe.ico")
-root.title("Tic Tac Toe Game")
+root.title("Tic Tac Toe Game : X Player")
 root.resizable(False,False)
 board = Board(5,5,4)
 play = True
@@ -143,10 +142,8 @@ def server():
     while True: 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((TCP_IP,TCP_PORT))
-
         data = s.recv(BUFFER_SIZE).decode("utf-8")
         press(int(data[:1]),int(data[-1:]),False)
-        print(data)
 
         s.close()
 def send(r,c):

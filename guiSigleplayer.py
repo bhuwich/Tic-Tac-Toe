@@ -1,6 +1,5 @@
 from cProfile import label
 from email.mime import image
-from itertools import count
 from Board import Board
 import tkinter as tk
 from AI import AI
@@ -122,7 +121,7 @@ def play():
         
     
 
-play()
+
 
 
 
@@ -139,5 +138,5 @@ def press(r,c):
             msgbox("Draw T-T")                          
         else:
             msgbox("Winner is "+board.checkWin()+"!!!!!!!!","Winner","close")
-    
+play()
 root.mainloop()

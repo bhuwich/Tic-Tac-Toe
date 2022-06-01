@@ -4,7 +4,6 @@ import socket
 import threading
 from cProfile import label
 from email.mime import image
-from itertools import count
 from Board import Board
 import tkinter as tk
 from AI import AI
@@ -15,7 +14,7 @@ import tkinter.messagebox
 
 root = tk.Tk()
 root.iconbitmap("tic_tac_toe.ico")
-root.title("Tic Tac Toe Game")
+root.title("Tic Tac Toe Game : O Player")
 root.resizable(False,False)
 board = Board(5,5,4)
 TCP_IP = "127.0.0.1"
