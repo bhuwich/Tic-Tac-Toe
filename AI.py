@@ -74,9 +74,9 @@ class AI:
                 if board_tmp[i,j] == 0:
                     board_tmp[i,j] = self.value #ลองวาง
                     if self.value == 1:
-                        vb_table[i,j] = self.calXOb(board_tmp, 'o') - self.calXOb(board_tmp, 'x') + 1
+                        vb_table[i,j] = self.calXOb(board_tmp, 'o') - self.calXOb(board_tmp, 'x') 
                     else:
-                        vb_table[i,j] = self.calXOb(board_tmp, 'x') - self.calXOb(board_tmp, 'o') + 1
+                        vb_table[i,j] = self.calXOb(board_tmp, 'x') - self.calXOb(board_tmp, 'o')
                     board_tmp[i,j] = 0 #เอาออก              
         vb_max = np.max(vb_table)
         for i in range(np.shape(vb_table)[0]):
